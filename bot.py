@@ -1,13 +1,11 @@
 import asyncio
 import os
-from datetime import datetime, timedelta, timezone
-from zoneinfo import ZoneInfo
-from aiogram import Bot, Dispatcher, types, F
-from aiogram.filters import Command
-from aiogram.enums import ParseMode
-from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
+print("=== DEBUG ENV ===")
+print("BOT_TOKEN exists:", "BOT_TOKEN" in os.environ)
+print("BOT_TOKEN value:", os.getenv("BOT_TOKEN"))
+print("All env keys:", list(os.environ.keys()))
+print("=================")
 
-# ================== НАСТРОЙКИ ==================
 BOT_TOKEN = os.getenv("BOT_TOKEN")
 if not BOT_TOKEN:
     raise RuntimeError("Задай переменную окружения BOT_TOKEN")
