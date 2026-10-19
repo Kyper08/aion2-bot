@@ -1,14 +1,21 @@
 import asyncio
 import os
+from datetime import datetime, timedelta, timezone
+from zoneinfo import ZoneInfo
+from aiogram import Bot, Dispatcher, types, F
+from aiogram.filters import Command
+from aiogram.enums import ParseMode
+from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
+
 print("=== DEBUG ENV ===")
 print("BOT_TOKEN exists:", "BOT_TOKEN" in os.environ)
 print("BOT_TOKEN value:", repr(os.getenv("BOT_TOKEN")))
 print("All env keys:", sorted(os.environ.keys()))
 print("=================")
+
 BOT_TOKEN = os.getenv("BOT_TOKEN")
 if not BOT_TOKEN:
     raise RuntimeError("Задай переменную окружения BOT_TOKEN")
-# ==============================================
 
 bot = Bot(token=BOT_TOKEN)
 dp = Dispatcher()
@@ -20,8 +27,6 @@ UTC = timezone.utc
 RIFT_HOURS = [0, 3, 6, 9, 12, 15, 18, 21]
 KAIRA_HOURS = [1, 4, 7, 10, 13, 16, 19, 22]
 
-# Artifact Siege + Executors: Пн / Чт / Сб в 21:00 UTC
-# Guardian Lord Nahma: Пт / Вс в 21:00 UTC
 ARTIFACT_DAYS = [0, 3, 5]  # Пн=0, Чт=3, Сб=5
 NAHMA_DAYS = [4, 6]        # Пт=4, Вс=6
 
@@ -41,7 +46,6 @@ def get_next_time(hours: list[int], now: datetime):
 
 
 def get_next_weekday_time(weekdays: list[int], hour: int, now: datetime):
-    """Ближайшее время по дням недели (0=Пн ... 6=Вс) в заданный час UTC."""
     candidates = []
     for day_offset in range(0, 8):
         day = now.date() + timedelta(days=day_offset)
