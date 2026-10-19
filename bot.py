@@ -27,12 +27,11 @@ UTC = timezone.utc
 RIFT_HOURS = [0, 3, 6, 9, 12, 15, 18, 21]
 KAIRA_HOURS = [1, 4, 7, 10, 13, 16, 19, 22]
 
-ARTIFACT_DAYS = [0, 3, 5]  # Пн=0, Чт=3, Сб=5
-NAHMA_DAYS = [4, 6]        # Пт=4, Вс=6
+ARTIFACT_DAYS = [0, 3, 5]
+NAHMA_DAYS = [4, 6]
 
 subscribers = set()
 notified = set()
-
 
 def get_next_time(hours: list[int], now: datetime):
     candidates = []
@@ -43,7 +42,6 @@ def get_next_time(hours: list[int], now: datetime):
     future = [t for t in candidates if t > now]
     next_t = min(future)
     return next_t, next_t - now
-
 
 def get_next_weekday_time(weekdays: list[int], hour: int, now: datetime):
     candidates = []
@@ -58,7 +56,6 @@ def get_next_weekday_time(weekdays: list[int], hour: int, now: datetime):
     next_t = min(candidates)
     return next_t, next_t - now
 
-
 def format_time_left(delta: timedelta) -> str:
     if delta is None:
         return "—"
@@ -68,7 +65,6 @@ def format_time_left(delta: timedelta) -> str:
     if h > 0:
         return f"{h}ч {m}м"
     return f"{m}м"
-
 
 def format_both_times(dt: datetime) -> str:
     if dt is None:
@@ -80,14 +76,12 @@ def format_both_times(dt: datetime) -> str:
         f"Виннипег: <b>{win.strftime('%H:%M')}</b> ({win.strftime('%d.%m')})"
     )
 
-
 def main_keyboard():
     kb = [
         [KeyboardButton(text="🌀 Портал"), KeyboardButton(text="⚔️ Боссы")],
         [KeyboardButton(text="📅 Ближайшее"), KeyboardButton(text="🔔 Уведомления")]
     ]
     return ReplyKeyboardMarkup(keyboard=kb, resize_keyboard=True)
-
 
 @dp.message(Command("start", "help"))
 async def cmd_start(message: types.Message):
@@ -102,7 +96,6 @@ async def cmd_start(message: types.Message):
     )
     await message.answer(text, parse_mode=ParseMode.HTML, reply_markup=main_keyboard())
 
-
 @dp.message(Command("rift"))
 @dp.message(F.text == "🌀 Портал")
 async def cmd_rift(message: types.Message):
@@ -116,16 +109,13 @@ async def cmd_rift(message: types.Message):
     )
     await message.answer(text, parse_mode=ParseMode.HTML)
 
-
 @dp.message(Command("boss"))
 @dp.message(F.text == "⚔️ Боссы")
 async def cmd_boss(message: types.Message):
     now = datetime.now(UTC)
-
     next_kaira, left_kaira = get_next_time(KAIRA_HOURS, now)
     next_artifact, left_artifact = get_next_weekday_time(ARTIFACT_DAYS, 21, now)
     next_nahma, left_nahma = get_next_weekday_time(NAHMA_DAYS, 21, now)
-
     text = (
         f"⚔️ <b>Мировые боссы</b>\n\n"
         f"<b>Watcher Kaira</b>\n"
@@ -142,14 +132,12 @@ async def cmd_boss(message: types.Message):
     )
     await message.answer(text, parse_mode=ParseMode.HTML)
 
-
 @dp.message(Command("next"))
 @dp.message(F.text == "📅 Ближайшее")
 async def cmd_next(message: types.Message):
     now = datetime.now(UTC)
     next_rift, left_rift = get_next_time(RIFT_HOURS, now)
     next_kaira, left_kaira = get_next_time(KAIRA_HOURS, now)
-
     text = (
         f"📅 <b>Ближайшие события</b>\n\n"
         f"🌀 <b>Spacetime Rift</b>\n"
@@ -160,7 +148,6 @@ async def cmd_next(message: types.Message):
         f"через {format_time_left(left_kaira)}"
     )
     await message.answer(text, parse_mode=ParseMode.HTML)
-
 
 @dp.message(Command("notify"))
 @dp.message(F.text == "🔔 Уведомления")
@@ -176,13 +163,10 @@ async def cmd_notify(message: types.Message):
             parse_mode=ParseMode.HTML
         )
 
-
 async def notification_loop():
     while True:
         try:
             now = datetime.now(UTC)
-
-            # Rift
             next_rift, left_rift = get_next_time(RIFT_HOURS, now)
             minutes_left = left_rift.total_seconds() / 60
             key_rift = f"rift_{next_rift.strftime('%Y%m%d_%H')}"
@@ -199,7 +183,6 @@ async def notification_loop():
                     except Exception:
                         subscribers.discard(user_id)
 
-            # Kaira
             next_kaira, left_kaira = get_next_time(KAIRA_HOURS, now)
             minutes_left_k = left_kaira.total_seconds() / 60
             key_kaira = f"kaira_{next_kaira.strftime('%Y%m%d_%H')}"
@@ -218,18 +201,14 @@ async def notification_loop():
 
             if len(notified) > 40:
                 notified.clear()
-
         except Exception as e:
             print("Ошибка уведомлений:", e)
-
         await asyncio.sleep(30)
-
 
 async def main():
     print("Бот запущен...")
     asyncio.create_task(notification_loop())
     await dp.start_polling(bot)
-
 
 if __name__ == "__main__":
     asyncio.run(main())
