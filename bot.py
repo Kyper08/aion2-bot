@@ -5,7 +5,6 @@ print("BOT_TOKEN exists:", "BOT_TOKEN" in os.environ)
 print("BOT_TOKEN value:", os.getenv("BOT_TOKEN"))
 print("All env keys:", list(os.environ.keys()))
 print("=================")
-
 BOT_TOKEN = os.getenv("BOT_TOKEN")
 if not BOT_TOKEN:
     raise RuntimeError("Задай переменную окружения BOT_TOKEN")
