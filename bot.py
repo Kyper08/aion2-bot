@@ -8,7 +8,7 @@ from aiogram.enums import ParseMode
 from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
 
 # ================== НАСТРОЙКИ ==================
-BOT_TOKEN = os.getenv("BOT_TOKEN")   # Токен берётся из переменной окружения
+BOT_TOKEN = "8998060766:AAE_Ran0WUbiLiVYwqzPieiPS6D7AWeAXGA"   # Токен берётся из переменной окружения
 # ==============================================
 
 bot = Bot(token=BOT_TOKEN)
